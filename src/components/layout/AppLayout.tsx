@@ -1,5 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Filter, Calendar as CalendarIcon, User } from "lucide-react";
 
@@ -16,27 +17,30 @@ export function AppLayout({ children, title, showFilters = false }: AppLayoutPro
         <AppSidebar />
         <main className="flex-1 flex flex-col min-h-screen overflow-hidden">
           {/* Header */}
-          <header className="h-14 border-b border-border flex items-center justify-between px-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <header className="h-16 border-b border-border flex items-center justify-between px-6 glass-effect sticky top-0 z-10">
             <div className="flex items-center gap-4">
-              <SidebarTrigger />
-              {title && <h1 className="text-xl font-semibold">{title}</h1>}
+              <SidebarTrigger className="hover:bg-secondary rounded-lg" />
+              {title && (
+                <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
+              )}
             </div>
             
             <div className="flex items-center gap-3">
               {showFilters && (
                 <>
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button variant="outline" size="sm" className="gap-2 rounded-lg">
                     <Filter className="w-4 h-4" />
                     Filters
                   </Button>
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button variant="outline" size="sm" className="gap-2 rounded-lg">
                     <CalendarIcon className="w-4 h-4" />
                     Date range
                   </Button>
                 </>
               )}
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <User className="w-5 h-5" />
+              <ThemeToggle />
+              <Button variant="ghost" size="icon" className="rounded-full w-9 h-9 bg-secondary/50">
+                <User className="w-4 h-4" />
               </Button>
             </div>
           </header>

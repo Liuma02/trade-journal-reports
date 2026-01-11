@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useTrades } from "@/contexts/TradeContext";
+import { EmptyState } from "@/components/EmptyState";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -8,6 +9,13 @@ const CalendarPage = () => {
   const { trades, getTradesByDate } = useTrades();
   const [currentDate, setCurrentDate] = useState(new Date());
 
+  if (trades.length === 0) {
+    return (
+      <AppLayout title="Calendar" showFilters>
+        <EmptyState type="calendar" />
+      </AppLayout>
+    );
+  }
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();

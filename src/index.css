@@ -2,105 +2,105 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
-/* Trading Journal Design System - Dark Theme */
+/* Modern Trading Journal Design System */
 
 @layer base {
   :root {
-    --background: 225 25% 8%;
-    --foreground: 210 20% 95%;
+    --background: 220 20% 97%;
+    --foreground: 224 28% 12%;
 
-    --card: 225 25% 11%;
-    --card-foreground: 210 20% 95%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 28% 12%;
 
-    --popover: 225 25% 11%;
-    --popover-foreground: 210 20% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 28% 12%;
 
-    --primary: 252 85% 60%;
+    --primary: 250 89% 62%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 225 20% 16%;
-    --secondary-foreground: 210 20% 90%;
+    --secondary: 220 14% 92%;
+    --secondary-foreground: 224 28% 20%;
 
-    --muted: 225 15% 18%;
-    --muted-foreground: 215 15% 55%;
+    --muted: 220 14% 94%;
+    --muted-foreground: 220 10% 45%;
 
-    --accent: 252 70% 50%;
+    --accent: 250 65% 58%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 225 15% 20%;
-    --input: 225 15% 20%;
-    --ring: 252 85% 60%;
+    --border: 220 14% 88%;
+    --input: 220 14% 88%;
+    --ring: 250 89% 62%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     /* Trading specific colors */
-    --profit: 158 64% 52%;
+    --profit: 152 68% 45%;
     --profit-foreground: 0 0% 100%;
-    --loss: 0 72% 51%;
+    --loss: 0 75% 55%;
     --loss-foreground: 0 0% 100%;
-    --chart-bar: 252 85% 60%;
-    --chart-bar-muted: 252 40% 45%;
+    --chart-bar: 250 89% 62%;
+    --chart-bar-muted: 250 40% 75%;
 
-    /* Sidebar */
-    --sidebar-background: 252 65% 25%;
+    /* Sidebar - Light theme */
+    --sidebar-background: 224 35% 18%;
     --sidebar-foreground: 210 20% 95%;
-    --sidebar-primary: 252 85% 60%;
+    --sidebar-primary: 250 89% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 252 55% 35%;
+    --sidebar-accent: 224 30% 25%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 252 40% 30%;
-    --sidebar-ring: 252 85% 60%;
+    --sidebar-border: 224 25% 25%;
+    --sidebar-ring: 250 89% 62%;
   }
 
   .dark {
-    --background: 225 25% 8%;
+    --background: 224 35% 8%;
     --foreground: 210 20% 95%;
 
-    --card: 225 25% 11%;
+    --card: 224 32% 11%;
     --card-foreground: 210 20% 95%;
 
-    --popover: 225 25% 11%;
+    --popover: 224 32% 11%;
     --popover-foreground: 210 20% 95%;
 
-    --primary: 252 85% 60%;
+    --primary: 250 89% 65%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 225 20% 16%;
+    --secondary: 224 25% 16%;
     --secondary-foreground: 210 20% 90%;
 
-    --muted: 225 15% 18%;
+    --muted: 224 20% 14%;
     --muted-foreground: 215 15% 55%;
 
-    --accent: 252 70% 50%;
+    --accent: 250 75% 60%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 225 15% 20%;
-    --input: 225 15% 20%;
-    --ring: 252 85% 60%;
+    --border: 224 20% 18%;
+    --input: 224 20% 18%;
+    --ring: 250 89% 65%;
 
     --profit: 158 64% 52%;
     --profit-foreground: 0 0% 100%;
-    --loss: 0 72% 51%;
+    --loss: 0 72% 55%;
     --loss-foreground: 0 0% 100%;
-    --chart-bar: 252 85% 60%;
-    --chart-bar-muted: 252 40% 45%;
+    --chart-bar: 250 89% 65%;
+    --chart-bar-muted: 250 40% 45%;
 
-    --sidebar-background: 252 65% 25%;
+    --sidebar-background: 250 50% 22%;
     --sidebar-foreground: 210 20% 95%;
-    --sidebar-primary: 252 85% 60%;
+    --sidebar-primary: 250 89% 65%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 252 55% 35%;
+    --sidebar-accent: 250 45% 30%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 252 40% 30%;
-    --sidebar-ring: 252 85% 60%;
+    --sidebar-border: 250 35% 28%;
+    --sidebar-ring: 250 89% 65%;
   }
 }
 
@@ -109,22 +109,78 @@
     @apply border-border;
   }
 
+  html {
+    @apply scroll-smooth;
+  }
+
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    @apply font-semibold tracking-tight;
   }
 }
 
 @layer components {
   .filter-tab {
-    @apply px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer;
+    @apply px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-lg;
   }
   
   .filter-tab-active {
-    @apply text-primary border-b-2 border-primary;
+    @apply text-primary bg-primary/10;
   }
 
   .chart-card {
-    @apply bg-card rounded-lg border border-border p-5;
+    @apply bg-card rounded-xl border border-border p-5 shadow-sm;
   }
+
+  .stat-card {
+    @apply bg-card rounded-xl border border-border p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/20;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+
+  .glass-effect {
+    @apply bg-background/80 backdrop-blur-lg;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/30;
+}
+
+/* Smooth animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 0%,
+    hsl(var(--muted-foreground) / 0.1) 50%,
+    hsl(var(--muted)) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
 }
