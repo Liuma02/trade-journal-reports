@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ReportHeader } from "@/components/reports/ReportHeader";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { FilterTabs } from "@/components/reports/FilterTabs";
 import { DistributionChart } from "@/components/reports/DistributionChart";
 import { PerformanceChart } from "@/components/reports/PerformanceChart";
@@ -16,10 +16,8 @@ const Reports = () => {
   const categoryTitle = getCategoryTitle(activeFilter);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-[1600px] mx-auto p-6">
-        <ReportHeader />
-        
+    <AppLayout title="Reports" showFilters>
+      <div className="p-6">
         <PnlToggle value={pnlType} onChange={setPnlType} />
         
         <FilterTabs activeFilter={activeFilter} onFilterChange={setActiveFilter} />
@@ -43,7 +41,7 @@ const Reports = () => {
           <SummaryTable data={data} labelHeader={categoryTitle} />
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 
