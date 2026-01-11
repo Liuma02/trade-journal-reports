@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useTrades, Trade } from "@/contexts/TradeContext";
+import { EmptyState } from "@/components/EmptyState";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronDown, ChevronRight, Edit2, Save, X } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
 interface DayData {
   date: string;
   trades: Trade[];
@@ -26,6 +26,13 @@ const Journal = () => {
   const [editingNote, setEditingNote] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
 
+  if (trades.length === 0) {
+    return (
+      <AppLayout title="Daily Journal" showFilters>
+        <EmptyState type="journal" />
+      </AppLayout>
+    );
+  }
   // Group trades by date
   const tradesByDate = trades.reduce((acc, trade) => {
     if (!acc[trade.date]) {
