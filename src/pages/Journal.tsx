@@ -28,7 +28,7 @@ const Journal = () => {
 
   if (trades.length === 0) {
     return (
-      <AppLayout title="Daily Journal" showFilters>
+      <AppLayout title="Daily Journal">
         <EmptyState type="journal" />
       </AppLayout>
     );
@@ -128,7 +128,7 @@ const Journal = () => {
   };
 
   return (
-    <AppLayout title="Daily Journal" showFilters>
+    <AppLayout title="Daily Journal">
       <div className="p-6 space-y-4">
         {dayDataList.map((day) => {
           const isExpanded = expandedDays.has(day.date);
