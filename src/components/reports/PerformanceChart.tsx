@@ -1,10 +1,10 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from "recharts";
-import { TradeData } from "@/data/mockTradeData";
+import { ReportTradeData } from "@/pages/Reports";
 
 interface PerformanceChartProps {
   title: string;
   subtitle?: string;
-  data: TradeData[];
+  data: ReportTradeData[];
 }
 
 export function PerformanceChart({ title, subtitle, data }: PerformanceChartProps) {

@@ -1,10 +1,10 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { TradeData } from "@/data/mockTradeData";
+import { ReportTradeData } from "@/pages/Reports";
 
 interface DistributionChartProps {
   title: string;
   subtitle?: string;
-  data: TradeData[];
+  data: ReportTradeData[];
 }
 
 export function DistributionChart({ title, subtitle, data }: DistributionChartProps) {
