@@ -1,4 +1,4 @@
-import { LayoutDashboard, Calendar, LineChart, BookOpen, BarChart3, Upload, Sparkles } from "lucide-react";
+import { LayoutDashboard, Calendar, LineChart, BookOpen, BarChart3, Upload, BarChart } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter, useSidebar } from "@/components/ui/sidebar";
@@ -44,9 +44,9 @@ export function AppSidebar() {
           {!collapsed && <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
                 <span className="font-bold text-2xl text-sidebar-foreground tracking-tight">20 Point</span>
-                <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+                <BarChart className="w-4 h-4 text-primary animate-pulse" />
               </div>
-              <span className="text-xs text-sidebar-foreground/50 uppercase tracking-[0.2em] font-medium">JOURNAL</span>
+              <span className="text-xs text-sidebar-foreground/50 uppercase tracking-[0.2em] font-medium">TRADE JOURNAL</span>
             </div>}
         </div>
       </SidebarHeader>
