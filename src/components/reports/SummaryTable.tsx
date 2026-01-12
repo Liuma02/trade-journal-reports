@@ -6,10 +6,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { TradeData } from "@/data/mockTradeData";
+import { ReportTradeData } from "@/pages/Reports";
 
 interface SummaryTableProps {
-  data: TradeData[];
+  data: ReportTradeData[];
   labelHeader: string;
 }
 

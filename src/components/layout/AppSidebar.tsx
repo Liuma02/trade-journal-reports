@@ -44,13 +44,13 @@ export function AppSidebar() {
     >
       <SidebarHeader className="p-4 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg overflow-hidden bg-sidebar-accent/50 flex items-center justify-center p-1">
+          <div className="w-14 h-14 rounded-xl overflow-hidden bg-sidebar-accent/50 flex items-center justify-center p-1.5 shadow-md">
             <img src={logo} alt="20 Point" className="w-full h-full object-contain" />
           </div>
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="font-bold text-lg text-sidebar-foreground tracking-tight">20 Point</span>
-              <span className="text-[10px] text-sidebar-foreground/60 uppercase tracking-wider">Fund Managers</span>
+              <span className="font-bold text-xl text-sidebar-foreground tracking-tight">20 Point</span>
+              <span className="text-xs text-sidebar-foreground/60 uppercase tracking-wider">Fund Managers</span>
             </div>
           )}
         </div>

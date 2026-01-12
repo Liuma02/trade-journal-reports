@@ -1,4 +1,5 @@
 import { filterCategories, FilterCategory } from "@/data/mockTradeData";
+// Using types from mockTradeData, but actual data comes from TradeContext
 
 interface FilterTabsProps {
   activeFilter: FilterCategory;
