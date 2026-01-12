@@ -39,7 +39,7 @@ const TradesPage = () => {
 
   if (trades.length === 0) {
     return (
-      <AppLayout title="Trades" showFilters>
+      <AppLayout title="Trades">
         <EmptyState type="trades" />
       </AppLayout>
     );
@@ -96,7 +96,7 @@ const TradesPage = () => {
   const totalCommissions = filteredAndSortedTrades.reduce((sum, t) => sum + t.commission, 0);
 
   return (
-    <AppLayout title="Trades" showFilters>
+    <AppLayout title="Trades">
       <div className="p-6 space-y-6 animate-fade-in">
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

@@ -165,7 +165,7 @@ const Reports = () => {
 
   if (trades.length === 0) {
     return (
-      <AppLayout title="Reports" showFilters>
+      <AppLayout title="Reports">
         <div className="p-6">
           <EmptyState type="reports" />
         </div>
@@ -174,7 +174,7 @@ const Reports = () => {
   }
 
   return (
-    <AppLayout title="Reports" showFilters>
+    <AppLayout title="Reports">
       <div className="p-6">
         <PnlToggle value={pnlType} onChange={setPnlType} />
         

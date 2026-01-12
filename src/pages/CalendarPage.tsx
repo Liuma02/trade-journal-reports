@@ -11,7 +11,7 @@ const CalendarPage = () => {
 
   if (trades.length === 0) {
     return (
-      <AppLayout title="Calendar" showFilters>
+      <AppLayout title="Calendar">
         <EmptyState type="calendar" />
       </AppLayout>
     );
@@ -109,7 +109,7 @@ const CalendarPage = () => {
   }
 
   return (
-    <AppLayout title="Calendar" showFilters>
+    <AppLayout title="Calendar">
       <div className="p-6">
         {/* Calendar Header */}
         <div className="flex items-center justify-between mb-6">
