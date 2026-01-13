@@ -1,9 +1,10 @@
-import { LayoutDashboard, Calendar, LineChart, BookOpen, BarChart3, Upload, BarChart } from "lucide-react";
+import { LayoutDashboard, Calendar, LineChart, BookOpen, BarChart3, Upload, BarChart, Settings } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter, useSidebar } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
+
 const navItems = [{
   title: "Dashboard",
   url: "/dashboard",
@@ -24,6 +25,10 @@ const navItems = [{
   title: "Reports",
   url: "/reports",
   icon: BarChart3
+}, {
+  title: "Settings",
+  url: "/settings",
+  icon: Settings
 }];
 export function AppSidebar() {
   const {
