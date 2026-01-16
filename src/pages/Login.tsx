@@ -1,34 +1,35 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { BarChart, Sparkles } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { signIn, isConfigured } = useAuth();
+  const from = (location.state as any)?.from?.pathname || '/dashboard';
 
   const handleLogin = async (email: string, password: string, remember: boolean) => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // For demo purposes, accept any credentials
-    // In production, this would validate against your auth system
-    if (email && password) {
-      if (remember) {
-        localStorage.setItem('user-email', email);
-      }
-      navigate('/dashboard');
-    } else {
-      throw new Error('Invalid credentials');
+    if (!isConfigured) {
+      // Demo mode - just navigate
+      await new Promise(resolve => setTimeout(resolve, 500));
+      navigate(from);
+      return;
     }
+
+    const { error } = await signIn(email, password);
+    if (error) {
+      throw new Error(error.message);
+    }
+    navigate(from);
   };
 
   const handleForgotPassword = () => {
-    // In production, navigate to forgot password page
-    alert('Password reset functionality would be implemented here');
+    alert('Password reset functionality - check your Supabase dashboard');
   };
 
   const handleCreateAccount = () => {
-    // In production, navigate to signup page
-    alert('Account creation functionality would be implemented here');
+    navigate('/signup');
   };
 
   return (
