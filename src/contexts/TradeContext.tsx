@@ -1,4 +1,9 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { isSupabaseConfigured } from '@/lib/supabase';
+import * as tradesService from '@/services/tradesService';
+import * as journalService from '@/services/journalService';
+import { useToast } from '@/hooks/use-toast';
 
 export interface Trade {
   id: string;
@@ -29,17 +34,19 @@ interface TradeContextType {
   trades: Trade[];
   journalEntries: JournalEntry[];
   customTags: string[];
-  addTrade: (trade: Omit<Trade, 'id'>) => void;
-  addTrades: (trades: Omit<Trade, 'id'>[]) => void;
-  updateTrade: (id: string, trade: Partial<Trade>) => void;
-  deleteTrade: (id: string) => void;
-  clearAllTrades: () => void;
-  addJournalEntry: (entry: Omit<JournalEntry, 'id'>) => void;
-  updateJournalEntry: (id: string, entry: Partial<JournalEntry>) => void;
-  deleteJournalEntry: (id: string) => void;
+  isLoading: boolean;
+  addTrade: (trade: Omit<Trade, 'id'>) => Promise<void>;
+  addTrades: (trades: Omit<Trade, 'id'>[]) => Promise<void>;
+  updateTrade: (id: string, trade: Partial<Trade>) => Promise<void>;
+  deleteTrade: (id: string) => Promise<void>;
+  clearAllTrades: () => Promise<void>;
+  addJournalEntry: (entry: Omit<JournalEntry, 'id'>) => Promise<void>;
+  updateJournalEntry: (id: string, entry: Partial<JournalEntry>) => Promise<void>;
+  deleteJournalEntry: (id: string) => Promise<void>;
   addCustomTag: (tag: string) => void;
   removeCustomTag: (tag: string) => void;
-  importFromCSV: (csvContent: string, brokerFormat: string) => { success: boolean; count: number; errors: string[] };
+  importFromCSV: (csvContent: string, brokerFormat: string) => Promise<{ success: boolean; count: number; errors: string[] }>;
+  refreshData: () => Promise<void>;
   getTotalPnL: () => number;
   getWinRate: () => number;
   getProfitFactor: () => number;
@@ -57,46 +64,283 @@ const TradeContext = createContext<TradeContextType | undefined>(undefined);
 
 const DEFAULT_TAGS = ['FOMO', 'REVENGE', 'OVERSIZE', 'PATIENCE', 'BREAKOUT', 'TREND', 'REVERSAL', 'NEWS'];
 
+// Helper to convert database row to Trade interface
+const dbRowToTrade = (row: any): Trade => ({
+  id: row.id,
+  date: row.trade_date,
+  symbol: row.symbol,
+  side: row.side as 'long' | 'short',
+  entryPrice: parseFloat(row.entry_price),
+  exitPrice: parseFloat(row.exit_price),
+  quantity: parseFloat(row.quantity),
+  pnl: parseFloat(row.pnl),
+  commission: parseFloat(row.commission),
+  duration: row.duration || 0,
+  setup: row.setup || undefined,
+  notes: row.notes || undefined,
+  tags: row.tags || [],
+  mistakes: row.mistakes || [],
+});
+
+// Helper to convert Trade to database row format
+const tradeToDbRow = (trade: Omit<Trade, 'id'>, userId: string) => ({
+  user_id: userId,
+  trade_date: trade.date,
+  symbol: trade.symbol,
+  side: trade.side,
+  entry_price: trade.entryPrice,
+  exit_price: trade.exitPrice,
+  quantity: trade.quantity,
+  pnl: trade.pnl,
+  commission: trade.commission,
+  duration: trade.duration,
+  setup: trade.setup || null,
+  notes: trade.notes || null,
+  tags: trade.tags || [],
+  mistakes: trade.mistakes || [],
+});
+
+// Helper to convert database row to JournalEntry interface
+const dbRowToJournalEntry = (row: any): JournalEntry => ({
+  id: row.id,
+  date: row.trade_date,
+  notes: row.notes || '',
+  mood: row.mood as 'positive' | 'neutral' | 'negative' | undefined,
+  lessons: row.lessons || undefined,
+});
+
+// Helper to convert JournalEntry to database row format
+const journalEntryToDbRow = (entry: Omit<JournalEntry, 'id'>, userId: string) => ({
+  user_id: userId,
+  trade_date: entry.date,
+  notes: entry.notes,
+  mood: entry.mood || null,
+  lessons: entry.lessons || null,
+});
+
 export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [customTags, setCustomTags] = useState<string[]>(DEFAULT_TAGS);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const isConfigured = isSupabaseConfigured();
 
   const generateId = () => Math.random().toString(36).substr(2, 9);
 
-  const addTrade = useCallback((trade: Omit<Trade, 'id'>) => {
-    setTrades(prev => [...prev, { ...trade, id: generateId() }]);
-  }, []);
+  // Fetch data from Supabase when user changes
+  const refreshData = useCallback(async () => {
+    if (!isConfigured || !user) {
+      setTrades([]);
+      setJournalEntries([]);
+      return;
+    }
 
-  const addTrades = useCallback((newTrades: Omit<Trade, 'id'>[]) => {
-    const tradesWithIds = newTrades.map(trade => ({ ...trade, id: generateId() }));
-    setTrades(prev => [...prev, ...tradesWithIds]);
-  }, []);
+    setIsLoading(true);
+    try {
+      const [tradesResult, journalResult] = await Promise.all([
+        tradesService.fetchTrades(),
+        journalService.fetchJournalEntries(),
+      ]);
 
-  const updateTrade = useCallback((id: string, updates: Partial<Trade>) => {
-    setTrades(prev => prev.map(trade => trade.id === id ? { ...trade, ...updates } : trade));
-  }, []);
+      if (tradesResult.error) {
+        console.error('Error fetching trades:', tradesResult.error);
+        toast({ title: 'Error', description: 'Failed to load trades', variant: 'destructive' });
+      } else {
+        setTrades((tradesResult.data || []).map(dbRowToTrade));
+      }
 
-  const deleteTrade = useCallback((id: string) => {
+      if (journalResult.error) {
+        console.error('Error fetching journal:', journalResult.error);
+      } else {
+        setJournalEntries((journalResult.data || []).map(dbRowToJournalEntry));
+      }
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isConfigured, user, toast]);
+
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
+
+  const addTrade = useCallback(async (trade: Omit<Trade, 'id'>) => {
+    if (!isConfigured || !user) {
+      // Local mode
+      setTrades(prev => [...prev, { ...trade, id: generateId() }]);
+      return;
+    }
+
+    const dbRow = tradeToDbRow(trade, user.id);
+    const result = await tradesService.createTrade(dbRow);
+    
+    if (result.error) {
+      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      return;
+    }
+    
+    if (result.data) {
+      setTrades(prev => [dbRowToTrade(result.data), ...prev]);
+    }
+  }, [isConfigured, user, toast]);
+
+  const addTrades = useCallback(async (newTrades: Omit<Trade, 'id'>[]) => {
+    if (!isConfigured || !user) {
+      // Local mode
+      const tradesWithIds = newTrades.map(trade => ({ ...trade, id: generateId() }));
+      setTrades(prev => [...prev, ...tradesWithIds]);
+      return;
+    }
+
+    const dbRows = newTrades.map(trade => tradeToDbRow(trade, user.id));
+    const result = await tradesService.createTrades(dbRows);
+    
+    if (result.error) {
+      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      return;
+    }
+    
+    if (result.data) {
+      setTrades(prev => [...result.data.map(dbRowToTrade), ...prev]);
+    }
+  }, [isConfigured, user, toast]);
+
+  const updateTrade = useCallback(async (id: string, updates: Partial<Trade>) => {
+    if (!isConfigured || !user) {
+      // Local mode
+      setTrades(prev => prev.map(trade => trade.id === id ? { ...trade, ...updates } : trade));
+      return;
+    }
+
+    // Convert updates to db format
+    const dbUpdates: any = {};
+    if (updates.date !== undefined) dbUpdates.trade_date = updates.date;
+    if (updates.symbol !== undefined) dbUpdates.symbol = updates.symbol;
+    if (updates.side !== undefined) dbUpdates.side = updates.side;
+    if (updates.entryPrice !== undefined) dbUpdates.entry_price = updates.entryPrice;
+    if (updates.exitPrice !== undefined) dbUpdates.exit_price = updates.exitPrice;
+    if (updates.quantity !== undefined) dbUpdates.quantity = updates.quantity;
+    if (updates.pnl !== undefined) dbUpdates.pnl = updates.pnl;
+    if (updates.commission !== undefined) dbUpdates.commission = updates.commission;
+    if (updates.duration !== undefined) dbUpdates.duration = updates.duration;
+    if (updates.setup !== undefined) dbUpdates.setup = updates.setup;
+    if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
+    if (updates.tags !== undefined) dbUpdates.tags = updates.tags;
+    if (updates.mistakes !== undefined) dbUpdates.mistakes = updates.mistakes;
+
+    const result = await tradesService.updateTrade(id, dbUpdates);
+    
+    if (result.error) {
+      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      return;
+    }
+    
+    if (result.data) {
+      setTrades(prev => prev.map(trade => trade.id === id ? dbRowToTrade(result.data) : trade));
+    }
+  }, [isConfigured, user, toast]);
+
+  const deleteTrade = useCallback(async (id: string) => {
+    if (!isConfigured || !user) {
+      // Local mode
+      setTrades(prev => prev.filter(trade => trade.id !== id));
+      return;
+    }
+
+    const result = await tradesService.deleteTrade(id);
+    
+    if (result.error) {
+      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      return;
+    }
+    
     setTrades(prev => prev.filter(trade => trade.id !== id));
-  }, []);
+  }, [isConfigured, user, toast]);
 
-  const clearAllTrades = useCallback(() => {
+  const clearAllTrades = useCallback(async () => {
+    if (!isConfigured || !user) {
+      // Local mode
+      setTrades([]);
+      setJournalEntries([]);
+      return;
+    }
+
+    const result = await tradesService.deleteAllTrades(user.id);
+    
+    if (result.error) {
+      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      return;
+    }
+    
     setTrades([]);
-    setJournalEntries([]);
-  }, []);
+  }, [isConfigured, user, toast]);
 
-  const addJournalEntry = useCallback((entry: Omit<JournalEntry, 'id'>) => {
-    setJournalEntries(prev => [...prev, { ...entry, id: generateId() }]);
-  }, []);
+  const addJournalEntry = useCallback(async (entry: Omit<JournalEntry, 'id'>) => {
+    if (!isConfigured || !user) {
+      // Local mode
+      setJournalEntries(prev => [...prev, { ...entry, id: generateId() }]);
+      return;
+    }
 
-  const updateJournalEntry = useCallback((id: string, updates: Partial<JournalEntry>) => {
-    setJournalEntries(prev => prev.map(entry => entry.id === id ? { ...entry, ...updates } : entry));
-  }, []);
+    const dbRow = journalEntryToDbRow(entry, user.id);
+    const result = await journalService.createJournalEntry(dbRow);
+    
+    if (result.error) {
+      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      return;
+    }
+    
+    if (result.data) {
+      setJournalEntries(prev => [dbRowToJournalEntry(result.data), ...prev]);
+    }
+  }, [isConfigured, user, toast]);
 
-  const deleteJournalEntry = useCallback((id: string) => {
+  const updateJournalEntry = useCallback(async (id: string, updates: Partial<JournalEntry>) => {
+    if (!isConfigured || !user) {
+      // Local mode
+      setJournalEntries(prev => prev.map(entry => entry.id === id ? { ...entry, ...updates } : entry));
+      return;
+    }
+
+    // Convert updates to db format
+    const dbUpdates: any = {};
+    if (updates.date !== undefined) dbUpdates.trade_date = updates.date;
+    if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
+    if (updates.mood !== undefined) dbUpdates.mood = updates.mood;
+    if (updates.lessons !== undefined) dbUpdates.lessons = updates.lessons;
+
+    const result = await journalService.updateJournalEntry(id, dbUpdates);
+    
+    if (result.error) {
+      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      return;
+    }
+    
+    if (result.data) {
+      setJournalEntries(prev => prev.map(entry => entry.id === id ? dbRowToJournalEntry(result.data) : entry));
+    }
+  }, [isConfigured, user, toast]);
+
+  const deleteJournalEntry = useCallback(async (id: string) => {
+    if (!isConfigured || !user) {
+      // Local mode
+      setJournalEntries(prev => prev.filter(entry => entry.id !== id));
+      return;
+    }
+
+    const result = await journalService.deleteJournalEntry(id);
+    
+    if (result.error) {
+      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      return;
+    }
+    
     setJournalEntries(prev => prev.filter(entry => entry.id !== id));
-  }, []);
+  }, [isConfigured, user, toast]);
 
   const addCustomTag = useCallback((tag: string) => {
     setCustomTags(prev => {
@@ -112,7 +356,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCustomTags(prev => prev.filter(t => t !== tag));
   }, []);
 
-  const importFromCSV = useCallback((csvContent: string, brokerFormat: string): { success: boolean; count: number; errors: string[] } => {
+  const importFromCSV = useCallback(async (csvContent: string, brokerFormat: string): Promise<{ success: boolean; count: number; errors: string[] }> => {
     const errors: string[] = [];
     const lines = csvContent.trim().split('\n');
     
@@ -180,7 +424,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
 
     if (newTrades.length > 0) {
-      addTrades(newTrades);
+      await addTrades(newTrades);
       return { success: true, count: newTrades.length, errors };
     }
 
@@ -344,6 +588,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       trades,
       journalEntries,
       customTags,
+      isLoading,
       addTrade,
       addTrades,
       updateTrade,
@@ -355,6 +600,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       addCustomTag,
       removeCustomTag,
       importFromCSV,
+      refreshData,
       getTotalPnL,
       getWinRate,
       getProfitFactor,

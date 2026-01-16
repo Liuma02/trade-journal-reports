@@ -11,6 +11,16 @@ export async function fetchJournalEntries(): Promise<ServiceResult<any[]>> {
   return { data, error: null };
 }
 
+export async function fetchJournalEntryByDate(date: string): Promise<ServiceResult<any>> {
+  const { data, error } = await supabase
+    .from('journal_entries')
+    .select('*')
+    .eq('trade_date', date)
+    .maybeSingle();
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
 export async function createJournalEntry(entry: any): Promise<ServiceResult<any>> {
   const { data, error } = await supabase.from('journal_entries').insert(entry).select().single();
   if (error) return { data: null, error: error.message };
@@ -19,6 +29,16 @@ export async function createJournalEntry(entry: any): Promise<ServiceResult<any>
 
 export async function updateJournalEntry(id: string, updates: any): Promise<ServiceResult<any>> {
   const { data, error } = await supabase.from('journal_entries').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id).select().single();
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
+export async function upsertJournalEntry(entry: any): Promise<ServiceResult<any>> {
+  const { data, error } = await supabase
+    .from('journal_entries')
+    .upsert(entry, { onConflict: 'user_id,trade_date' })
+    .select()
+    .single();
   if (error) return { data: null, error: error.message };
   return { data, error: null };
 }
