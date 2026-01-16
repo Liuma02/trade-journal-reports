@@ -68,7 +68,7 @@ const Import = () => {
     setImporting(true);
     try {
       const content = await file.text();
-      const importResult = importFromCSV(content, selectedBroker);
+      const importResult = await importFromCSV(content, selectedBroker);
       setResult(importResult);
 
       if (importResult.success) {
