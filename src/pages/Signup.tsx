@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { friendlyAuthError } from '@/lib/authErrors';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -58,7 +59,7 @@ export default function Signup() {
     setIsLoading(false);
 
     if (signUpError) {
-      setError(signUpError.message);
+      setError(friendlyAuthError(signUpError.message));
       return;
     }
 
