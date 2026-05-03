@@ -94,39 +94,40 @@
   }
 
   .dark {
-    /* Modern Dark Theme - Sleek & Premium */
-    --background: 230 15% 8%;
-    --foreground: 210 20% 98%;
+    /* Cockpit Dark Theme - Calm command center */
+    --background: 222 28% 8%;
+    --foreground: 210 22% 92%;
 
-    --card: 230 15% 11%;
-    --card-foreground: 210 20% 98%;
+    --card: 222 25% 11%;
+    --card-foreground: 210 22% 94%;
 
-    --popover: 230 15% 13%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 222 25% 12%;
+    --popover-foreground: 210 22% 94%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
+    /* Muted blue — trust and clarity */
+    --primary: 213 60% 62%;
+    --primary-foreground: 222 28% 8%;
 
-    --secondary: 230 15% 16%;
-    --secondary-foreground: 210 20% 90%;
+    --secondary: 222 22% 15%;
+    --secondary-foreground: 210 20% 88%;
 
-    --muted: 230 12% 18%;
-    --muted-foreground: 215 15% 55%;
+    --muted: 222 20% 16%;
+    --muted-foreground: 215 14% 60%;
 
-    --accent: 230 15% 16%;
-    --accent-foreground: 210 20% 98%;
+    --accent: 222 22% 16%;
+    --accent-foreground: 210 22% 94%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 4 55% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 230 12% 18%;
-    --input: 230 12% 20%;
-    --ring: 217 91% 60%;
+    --border: 222 18% 18%;
+    --input: 222 18% 20%;
+    --ring: 213 60% 62%;
 
-    /* Trading specific - Dark */
-    --profit: 142 71% 45%;
+    /* Trading — soft, honest */
+    --profit: 152 38% 52%;
     --profit-foreground: 0 0% 100%;
-    --loss: 0 84% 60%;
+    --loss: 4 55% 60%;
     --loss-foreground: 0 0% 100%;
     --chart-bar: 217 91% 60%;
     --chart-bar-muted: 217 50% 30%;
