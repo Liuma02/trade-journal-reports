@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoginForm } from '@/components/auth/LoginForm';
+import { friendlyAuthError } from '@/lib/authErrors';
 import { BarChart, Sparkles } from 'lucide-react';
 
 export default function Login() {
@@ -19,13 +20,13 @@ export default function Login() {
 
     const { error } = await signIn(email, password);
     if (error) {
-      throw new Error(error.message);
+      throw new Error(friendlyAuthError(error.message));
     }
     navigate(from);
   };
 
   const handleForgotPassword = () => {
-    alert('Password reset functionality - check your Supabase dashboard');
+    navigate('/forgot-password');
   };
 
   const handleCreateAccount = () => {
