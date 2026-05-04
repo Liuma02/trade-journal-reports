@@ -4,6 +4,7 @@ import { isSupabaseConfigured } from '@/lib/supabase';
 import * as tradesService from '@/services/tradesService';
 import * as journalService from '@/services/journalService';
 import { useToast } from '@/hooks/use-toast';
+import { friendlyDataError } from '@/lib/authErrors';
 
 export interface Trade {
   id: string;
