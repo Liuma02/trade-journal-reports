@@ -4,6 +4,7 @@ import { isSupabaseConfigured } from '@/lib/supabase';
 import * as tradesService from '@/services/tradesService';
 import * as journalService from '@/services/journalService';
 import { useToast } from '@/hooks/use-toast';
+import { friendlyDataError } from '@/lib/authErrors';
 
 export interface Trade {
   id: string;
@@ -147,7 +148,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
       if (tradesResult.error) {
         console.error('Error fetching trades:', tradesResult.error);
-        toast({ title: 'Error', description: 'Failed to load trades', variant: 'destructive' });
+        toast({ title: 'Something went wrong', description: friendlyDataError(), variant: 'destructive' });
       } else {
         setTrades((tradesResult.data || []).map(dbRowToTrade));
       }
@@ -179,7 +180,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const result = await tradesService.createTrade(dbRow);
     
     if (result.error) {
-      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      toast({ title: 'Something went wrong', description: friendlyDataError(), variant: 'destructive' });
       return;
     }
     
@@ -200,7 +201,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const result = await tradesService.createTrades(dbRows);
     
     if (result.error) {
-      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      toast({ title: 'Something went wrong', description: friendlyDataError(), variant: 'destructive' });
       return;
     }
     
@@ -235,7 +236,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const result = await tradesService.updateTrade(id, dbUpdates);
     
     if (result.error) {
-      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      toast({ title: 'Something went wrong', description: friendlyDataError(), variant: 'destructive' });
       return;
     }
     
@@ -254,7 +255,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const result = await tradesService.deleteTrade(id);
     
     if (result.error) {
-      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      toast({ title: 'Something went wrong', description: friendlyDataError(), variant: 'destructive' });
       return;
     }
     
@@ -272,7 +273,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const result = await tradesService.deleteAllTrades(user.id);
     
     if (result.error) {
-      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      toast({ title: 'Something went wrong', description: friendlyDataError(), variant: 'destructive' });
       return;
     }
     
@@ -290,7 +291,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const result = await journalService.createJournalEntry(dbRow);
     
     if (result.error) {
-      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      toast({ title: 'Something went wrong', description: friendlyDataError(), variant: 'destructive' });
       return;
     }
     
@@ -316,7 +317,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const result = await journalService.updateJournalEntry(id, dbUpdates);
     
     if (result.error) {
-      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      toast({ title: 'Something went wrong', description: friendlyDataError(), variant: 'destructive' });
       return;
     }
     
@@ -335,7 +336,7 @@ export const TradeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const result = await journalService.deleteJournalEntry(id);
     
     if (result.error) {
-      toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      toast({ title: 'Something went wrong', description: friendlyDataError(), variant: 'destructive' });
       return;
     }
     
